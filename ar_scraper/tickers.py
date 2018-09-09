@@ -1,22 +1,7 @@
 from iexfinance import get_available_symbols
 import pandas as pd
-import string
 from collections import Counter
-
-
-def remove_punctuation(text):
-    translator = str.maketrans('', '', string.punctuation)
-    return text.translate(translator)
-
-
-def clean(row):
-    clean = []
-    for word in row.split(' '):
-        filtered = remove_punctuation(word)
-        if len(filtered) > 0:
-            clean.append(remove_punctuation(word))
-    else:
-        return clean
+from .tools import clean, remove_punctuation
 
 
 class TickerSearch:
@@ -63,8 +48,9 @@ class TickerSearch:
 
     def __getitem__(self, index):
         df = self.ticker_dataframe
+        index = index.upper()
         try:
-            return df.loc[str(index)]
+            return df.loc[str(index).upper()]
         except KeyError:
             pass
 
@@ -75,7 +61,8 @@ class TickerSearch:
         if len(name) > 0:
             return name
         elif len(symbol) > 0:
-            return symbol
+            idx = symbol.index[0]
+            return self.ticker_dataframe.loc[str(idx)]
         elif len(fuzzy) > 0:
             return fuzzy
         else:
